@@ -1,10 +1,21 @@
 const express = require("express");
 const exphbs = require("express-handlebars");
 const morgan = require("morgan");
+const mongoose = require("mongoose")
+const expressSession = require('express-session')
+const MongoStore = require('connect-mongo')(expressSession)
 const app = express();
 
 app.engine("handlebars", exphbs({defaultLayout: "main"}));
 app.set("view engine", "handlebars");
+
+app.use(expressSession({
+    secret: process.env.SESSION_SECRET,
+    cookie: {
+        expires: 600000
+    },
+    store: new MongoStore({ mongooseConnection: mongoose.connection })
+}))
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
