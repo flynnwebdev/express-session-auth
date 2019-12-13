@@ -1,4 +1,5 @@
 const { UserModel } = require('../database/models/user_model')
+const jwt = require("jsonwebtoken")
 
 // Render the user registration form
 async function registerNew(req, res) {
@@ -29,6 +30,11 @@ async function loginNew(req, res) {
     res.render('pages/login')
 }
 
+async function loginCreate(req, res) {
+    const token = jwt.sign({ sub: req.user._id }, process.env.SESSION_SECRET)
+    res.json(token)
+}
+
 // async function loginCreate(req, res) {
 //     const { email, password } = req.body
 //     const user = await UserModel.findOne({ email })
@@ -55,6 +61,6 @@ module.exports = {
     registerNew,
     registerCreate,
     logout,
-    loginNew
-    // loginCreate
+    loginNew,
+    loginCreate
 }

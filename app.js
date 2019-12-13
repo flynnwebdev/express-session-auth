@@ -6,6 +6,7 @@ const expressSession = require('express-session')
 const MongoStore = require('connect-mongo')(expressSession)
 const passport = require('passport')
 const LocalStrategy = require('passport-local')
+const { Strategy: JwtStrategy, ExtractJwt } = require("passport-jwt")
 const { UserModel } = require('./database/models/user_model')
 
 const app = express();
@@ -51,6 +52,23 @@ passport.use(new LocalStrategy({
         return done(null, user)
     }
 ))
+
+passport.use(
+  new JwtStrategy({
+    jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+    secretOrKey: process.env.SESSION_SECRET
+  },
+    async (jwt_payload, done) => {
+        const user = await UserModel.findById(jwt_payload.sub).catch(done)
+
+        if (!user) {
+            return done(null, false)
+        }
+
+        return done(null, user)
+    }
+  )
+);
 
 app.use(passport.initialize())
 app.use(passport.session())

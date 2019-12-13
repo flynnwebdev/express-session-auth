@@ -11,15 +11,16 @@ router.get('/register', authRedirect, AuthController.registerNew)
 
 router.post('/register', AuthController.registerCreate)
 
-router.get('/dashboard', authorise, PageController.dashboard)
+router.get('/dashboard', passport.authenticate('jwt', {session: false}), PageController.dashboard)
 
 router.get('/logout', AuthController.logout)
 
 router.get('/login', authRedirect, AuthController.loginNew)
 
 router.post('/login', passport.authenticate('local', {
-    successRedirect: "/dashboard",
-    failureRedirect: "/login"
-}))
+    // successRedirect: "/dashboard",
+    failureRedirect: "/login",
+    session: false
+}), AuthController.loginCreate)
 
 module.exports = router;
