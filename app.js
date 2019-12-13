@@ -4,6 +4,10 @@ const morgan = require("morgan");
 const mongoose = require("mongoose")
 const expressSession = require('express-session')
 const MongoStore = require('connect-mongo')(expressSession)
+const passport = require('passport')
+const LocalStrategy = require('passport-local')
+const { UserModel } = require('./database/models/user_model')
+
 const app = express();
 
 app.engine("handlebars", exphbs({defaultLayout: "main"}));
@@ -19,6 +23,37 @@ app.use(expressSession({
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
+
+passport.serializeUser((user, done) => {
+    done(null, user._id)
+})
+
+passport.deserializeUser(async (id, done) => {
+    try {
+        const user = await UserModel.findById(id)
+        done(null, user)
+    }
+    catch (error) {
+        done(error)
+    }
+})
+
+passport.use(new LocalStrategy({
+        usernameField: "email"
+    },
+    async (email, password, done) => {
+        const user = await UserModel.findOne({ email }).catch(done)
+
+        if (!user || !user.verifyPasswordSync(password)) {
+            return done(null, false)
+        }
+
+        return done(null, user)
+    }
+))
+
+app.use(passport.initialize())
+app.use(passport.session())
 
 app.use(morgan("combined"));
 

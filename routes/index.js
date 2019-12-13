@@ -1,4 +1,5 @@
 const express = require("express");
+const passport = require("passport")
 const router = express.Router();
 const PageController = require('../controllers/page_controller')
 const AuthController = require('../controllers/auth_controller')
@@ -16,6 +17,9 @@ router.get('/logout', AuthController.logout)
 
 router.get('/login', authRedirect, AuthController.loginNew)
 
-router.post('/login', AuthController.loginCreate)
+router.post('/login', passport.authenticate('local', {
+    successRedirect: "/dashboard",
+    failureRedirect: "/login"
+}))
 
 module.exports = router;

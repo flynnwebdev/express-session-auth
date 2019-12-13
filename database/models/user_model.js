@@ -9,12 +9,12 @@ const UserSchema = new mongoose.Schema({
     password: {
         type: String,
         required: true,
-        trim: true,
-        bcrypt: true
+        trim: true
+        // bcrypt: true
     }
 })
 
-UserSchema.plugin(require('mongoose-bcrypt'))
+// UserSchema.plugin(require('mongoose-bcrypt'))
 
 const UserModel = mongoose.model("user", UserSchema)
 

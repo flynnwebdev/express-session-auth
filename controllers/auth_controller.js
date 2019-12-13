@@ -10,46 +10,51 @@ async function registerCreate(req, res) {
     const { email, password } = req.body
 
     const user = await UserModel.create({ email, password })
-    req.session.user = user
+
+    req.login(user, (err) => {
+        if (err) {
+            return next(err)
+        }
+    })
+
     res.redirect("/dashboard")
 }
 
 async function logout(req, res) {
-    req.session.destroy(() => {
-        res.redirect('/')
-    })
+    req.logout()
+    res.redirect('/')
 }
 
 async function loginNew(req, res) {
     res.render('pages/login')
 }
 
-async function loginCreate(req, res) {
-    const { email, password } = req.body
-    const user = await UserModel.findOne({ email })
+// async function loginCreate(req, res) {
+//     const { email, password } = req.body
+//     const user = await UserModel.findOne({ email })
 
-    if (!user) {
-        return res.render('pages/login', {
-            error: "Invalid email or password"
-        })
-    }
+//     if (!user) {
+//         return res.render('pages/login', {
+//             error: "Invalid email or password"
+//         })
+//     }
 
-    const valid = await user.verifyPassword(password)
+//     const valid = await user.verifyPassword(password)
 
-    if (!valid) {
-        return res.render("pages/login", {
-          error: "Invalid email or password"
-        });
-    }
+//     if (!valid) {
+//         return res.render("pages/login", {
+//           error: "Invalid email or password"
+//         });
+//     }
 
-    req.session.user = user
-    res.redirect('/dashboard')
-}
+//     req.session.user = user
+//     res.redirect('/dashboard')
+// }
 
 module.exports = {
     registerNew,
     registerCreate,
     logout,
-    loginNew,
-    loginCreate
+    loginNew
+    // loginCreate
 }
