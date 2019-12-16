@@ -23,4 +23,15 @@ router.post('/login', passport.authenticate('local', {
     session: false
 }), AuthController.loginCreate)
 
+// Login with Google
+router.get('/oauth/google', passport.authenticate('google', {
+    scope: [ 'profile', 'email' ]
+}))
+
+// Callback from Google
+router.get('/oauth/google/callback', passport.authenticate('google', {
+    failureRedirect: '/login',
+    session: false
+}), AuthController.loginCreate)
+
 module.exports = router;

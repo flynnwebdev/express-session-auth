@@ -18,11 +18,15 @@ async function registerCreate(req, res) {
         }
     })
 
-    res.redirect("/dashboard")
+    loginCreate(req, res)
+    // const token = jwt.sign({ sub: req.user._id }, process.env.SESSION_SECRET)
+    // res.cookie("jwt", token)
+    // res.redirect("/dashboard")
 }
 
 async function logout(req, res) {
     req.logout()
+    res.cookie("jwt", null, { maxAge: -1 })
     res.redirect('/')
 }
 
@@ -32,7 +36,8 @@ async function loginNew(req, res) {
 
 async function loginCreate(req, res) {
     const token = jwt.sign({ sub: req.user._id }, process.env.SESSION_SECRET)
-    res.json(token)
+    res.cookie("jwt", token)
+    res.redirect('/dashboard')
 }
 
 // async function loginCreate(req, res) {
